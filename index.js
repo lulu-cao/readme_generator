@@ -2,11 +2,16 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
 
+// Import another JavaScript file for the license section
+const licenseSection = require('./generateMarkdown.js');
+
 // Create an array of questions for user input
 const questions = [
     "What is the title of your project?",
     "Please write a short description of your project. E.g., why did you build this project and what problem does it solve?",
-    "How do we deploy/install it?",
+    "How do users deploy/install it?",
+    "How do users use it?",
+    "What license do you choose?",
     "Who are contributors?",
     "What is your Github username?",
     "What is your email?"
@@ -31,18 +36,28 @@ inquirer
                 name: "deploymentName"
             }, 
             {
-                type: "contributor",
+                type: "usage",
                 message: questions[3],
+                name: "usageName"
+            }, 
+            {
+                type: "license",
+                message: questions[4],
+                name: "licenseName"
+            }, 
+            {
+                type: "contributor",
+                message: questions[5],
                 name: "contributorName"
             },
             {
                 type: "username",
-                message: questions[4],
+                message: questions[6],
                 name: "usernameName"
             },
             {
                 type: "email",
-                message: questions[5],
+                message: questions[7],
                 name: "emailName"
             }
         ]
@@ -52,32 +67,31 @@ inquirer
 
 // Create a function to write a README file
 function writeToFile(fileName, data) {
-    let userReport = 
-    `# ${data.titleName}
-    ## Table of Contents
-    - [Description](#description)
-    - [Installation](#installation)
-    - [Usage](#usage)
-    - [License](#license)
-    - [Contributing](#contributing)
-    - [Tests](#tests)
-    - [Questions](#questions)        
-    ## Description        
-    ${data.descriptionName}        
-    ## Installation         
-    ${data.deploymentName}   
-    ## Usage
-    ## License      
-    ## Contributing     
-    ## Tests   
-    ## Questions
-    For questions, please email me at [${data.emailName}](${data.emailName}).`;
+    let userReport = "";
+    userReport += `# ${data.titleName}\n\n`;
+    userReport += `## Table of Contents\n\n`;
+    userReport += `- [Description](#description)\n`;
+    userReport += `- [Installation](#installation)\n`;
+    userReport += `- [Usage](#usage)\n`;
+    userReport += `- [License](#license)\n`;
+    userReport += `- [Contributing](#contributing)\n`;
+    userReport += `- [Questions](#questions)\n\n`;
+    userReport += `## Description\n\n`;
+    userReport += `${data.descriptionName}\n\n`;
+    userReport += `## Installation\n\n`;
+    userReport += `${data.deploymentName}\n\n`;
+    userReport += `## Usage\n\n`;
+    userReport += `${data.usageName}\n\n`;
+    userReport += `## License\n\n`;
+    userReport += `${licenseSection(data)}\n\n`;
+    userReport += `## Contributing\n\n`;
+    userReport += `${data.contributorName}\n\n`;
+    userReport += `## Questions\n\n`;
+    userReport += `For questions, please email me at [${data.emailName}](mailto:${data.emailName}).`;
     fs.writeFile(`${fileName}.md`, userReport, (err) =>
     err ? console.log(error) : console.log("A readme file is successfully generated!"))
 }
 
-// Create a function to initialize app
+// Create a function to initialize the app and call it
 function init() {}
-
-// Call the above function to initialize app
 init();
